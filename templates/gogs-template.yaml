@@ -1,0 +1,247 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: jhh-gogs
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: gogs
+    name: gogs
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: gogs
+      deploymentconfig: gogs
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: gogs
+          deploymentconfig: gogs
+      spec:
+        containers:
+        - image: wkulhanek/gogs@sha256:8bcc1cb6f938388b288ba1f9cfe1f2fb7f0cd2297c7b4cdd2d88c2224bb99f4d
+          imagePullPolicy: IfNotPresent
+          name: gogs
+          ports:
+          - containerPort: 3000
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: gogs-volume-1
+          - mountPath: /opt/gogs/custom/conf
+            name: config-volume
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: gogs-volume-1
+          persistentVolumeClaim:
+            claimName: gogs-data
+        - configMap:
+            defaultMode: 420
+            name: gogs
+          name: config-volume
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - gogs
+        from:
+          kind: ImageStreamTag
+          name: gogs:11.34
+          namespace: jhh-gogs
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: gogs
+    name: gogs
+  spec:
+    host: gogs-jhh-gogs.192.168.64.13.nip.io
+    port:
+      targetPort: 3000-tcp
+    to:
+      kind: Service
+      name: gogs
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-11-02T04:30:11Z
+        message: a route in another namespace holds gogs-jhh-gogs.192.168.64.13.nip.io
+          and is older than gogs
+        reason: HostAlreadyClaimed
+        status: "False"
+        type: Admitted
+      host: gogs-jhh-gogs.192.168.64.13.nip.io
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: gogs
+    name: gogs
+  spec:
+    tags:
+    - annotations:
+        description: The Gogs Docker image
+        tags: gogs
+      from:
+        kind: DockerImage
+        name: wkulhanek/gogs:11.34
+      importPolicy: {}
+      name: "11.34"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: gogs
+    name: gogs
+  spec:
+    ports:
+    - name: 3000-tcp
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app: gogs
+      deploymentconfig: gogs
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+    creationTimestamp: null
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: gogs-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 4Gi
+    volumeName: pv0053
+  status: {}
+- apiVersion: v1
+  data:
+    app.ini: |+
+      APP_NAME = Gogs
+      RUN_USER = gogs
+      RUN_MODE = prod
+
+      [database]
+      DB_TYPE  = postgres
+      HOST     = postgresql:5432
+      NAME     = gogs
+      USER     = gogs
+      PASSWD   = gogs
+      SSL_MODE = disable
+      PATH     = data/gogs.db
+
+      [repository]
+      ROOT = /data/gogs-repositories
+
+      [server]
+      DOMAIN           = localhost
+      HTTP_PORT        = 3000
+      ROOT_URL         = http://gogs-jhh-gogs.192.168.64.13.nip.io/
+      DISABLE_SSH      = false
+      SSH_PORT         = 22
+      START_SSH_SERVER = false
+      OFFLINE_MODE     = false
+
+      [mailer]
+      ENABLED = false
+
+      [service]
+      REGISTER_EMAIL_CONFIRM = false
+      ENABLE_NOTIFY_MAIL     = false
+      DISABLE_REGISTRATION   = false
+      ENABLE_CAPTCHA         = true
+      REQUIRE_SIGNIN_VIEW    = false
+
+      [picture]
+      DISABLE_GRAVATAR        = false
+      ENABLE_FEDERATED_AVATAR = true
+
+      [session]
+      PROVIDER = file
+
+      [log]
+      MODE      = file
+      LEVEL     = Info
+      ROOT_PATH = /opt/gogs/log
+
+      [security]
+      INSTALL_LOCK = true
+      SECRET_KEY   = 3NqyqqNgUbOB4Qi
+
+  kind: ConfigMap
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    name: gogs
+parameters:
+- name: GUID
+  displayName: guid
+  description: guid common across all projects.
+  value: 'jhh'
+  required: true
+- name: CLUSTER
+  displayName: cluster
+  description: cluster.
+  value: 192.168.64.13.nip.io
+  required: true
