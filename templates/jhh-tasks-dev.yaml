@@ -86,7 +86,7 @@ objects:
       app: tasks
     name: tasks
   spec:
-    host: tasks-jhh-tasks-dev.192.168.64.13.nip.io
+    host: tasks-jhh-tasks-dev.192.168.64.18.nip.io
     port:
       targetPort: 8080
     to:
@@ -97,10 +97,10 @@ objects:
   status:
     ingress:
     - conditions:
-      - lastTransitionTime: 2018-11-02T15:22:23Z
+      - lastTransitionTime: 2018-11-03T01:40:17Z
         status: "True"
         type: Admitted
-      host: tasks-jhh-tasks-dev.192.168.64.13.nip.io
+      host: tasks-jhh-tasks-dev.192.168.64.18.nip.io
       routerName: router
       wildcardPolicy: None
 - apiVersion: v1
@@ -108,7 +108,7 @@ objects:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewBuild
-      openshift.io/image.dockerRepositoryCheck: 2018-11-02T15:21:15Z
+      openshift.io/image.dockerRepositoryCheck: 2018-11-03T01:39:34Z
     creationTimestamp: null
     generation: 3
     labels:
@@ -170,18 +170,10 @@ objects:
     successfulBuildsHistoryLimit: 5
     triggers:
     - github:
-        secret: l4mtmdZ_bwVZpN1vTCMv
+        secret: YHF12XGGxAWDQQN93-U-
       type: GitHub
     - generic:
-        secret: B_ZK84Co0skw3xfh_qk_
+        secret: WKS_I0p2liQIlJeNVwlY
       type: Generic
   status:
     lastVersion: 0
-- apiVersion: v1
-  data:
-    application-roles.properties: Placeholder
-    application-users.properties: Placeholder
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    name: tasks-config

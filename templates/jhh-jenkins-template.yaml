@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: ${GUID}-jenkins
+  name: jhh-jenkins
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
@@ -11,7 +11,7 @@ objects:
       openshift.io/generated-by: OpenShiftNewApp
       template.alpha.openshift.io/wait-for-ready: "true"
     creationTimestamp: null
-    generation: 1
+    generation: 2
     labels:
       app: jenkins-persistent
       template: jenkins-persistent-template
@@ -41,8 +41,6 @@ objects:
             value: "true"
           - name: OPENSHIFT_ENABLE_REDIRECT_PROMPT
             value: "true"
-          - name: DISABLE_ADMINISTRATIVE_MONITORS
-            value: "true"
           - name: KUBERNETES_MASTER
             value: https://kubernetes.default:443
           - name: KUBERNETES_TRUST_CERTIFICATES
@@ -51,7 +49,7 @@ objects:
             value: jenkins
           - name: JNLP_SERVICE_NAME
             value: jenkins-jnlp
-          image: registry.access.redhat.com/openshift3/jenkins-2-rhel7@sha256:9f54c6fe5c441db1eb6bf511abfcb2432638f06eae49569bc5aaa9510353afb0
+          image: 172.30.1.1:5000/openshift/jenkins@sha256:67279ed65f2d4f1d2fa68406965b974381f25ff0c8ebfa862d0b55c4abaafd96
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 2
@@ -76,11 +74,7 @@ objects:
             timeoutSeconds: 240
           resources:
             limits:
-              cpu: "2"
               memory: 2Gi
-            requests:
-              cpu: "1"
-              memory: 1Gi
           securityContext:
             capabilities: {}
             privileged: false
@@ -110,6 +104,7 @@ objects:
           kind: ImageStreamTag
           name: jenkins:2
           namespace: openshift
+        lastTriggeredImage: 172.30.1.1:5000/openshift/jenkins@sha256:67279ed65f2d4f1d2fa68406965b974381f25ff0c8ebfa862d0b55c4abaafd96
       type: ImageChange
     - type: ConfigChange
   status:
@@ -133,7 +128,7 @@ objects:
       template: jenkins-persistent-template
     name: jenkins
   spec:
-    host: jenkins-${GUID}-jenkins.apps.${CLUSTER}
+    host: jenkins-jhh-jenkins.apps.${CLUSTER}
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
@@ -145,33 +140,12 @@ objects:
   status:
     ingress:
     - conditions:
-      - lastTransitionTime: 2018-10-18T17:55:18Z
+      - lastTransitionTime: 2018-11-03T01:17:22Z
         status: "True"
         type: Admitted
-      host: jenkins-${GUID}-jenkins.apps.${CLUSTER}
+      host: jenkins-jhh-jenkins.apps.${CLUSTER}
       routerName: router
       wildcardPolicy: None
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    generation: 1
-    name: jenkins-slave-maven-appdev
-  spec:
-    lookupPolicy:
-      local: false
-    tags:
-    - annotations: null
-      from:
-        kind: DockerImage
-        name: docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-maven-appdev:v3.9
-      generation: null
-      importPolicy: {}
-      name: v3.9
-      referencePolicy:
-        type: ""
-  status:
-    dockerImageRepository: ""
 - apiVersion: v1
   kind: Service
   metadata:
@@ -227,6 +201,8 @@ objects:
       pv.kubernetes.io/bind-completed: "yes"
       pv.kubernetes.io/bound-by-controller: "yes"
     creationTimestamp: null
+    finalizers:
+    - kubernetes.io/pvc-protection
     labels:
       app: jenkins-persistent
       template: jenkins-persistent-template
@@ -237,7 +213,7 @@ objects:
     resources:
       requests:
         storage: 4Gi
-    volumeName: pv0098
+    volumeName: pv0097
   status: {}
 parameters:
 - name: GUID
@@ -248,5 +224,10 @@ parameters:
 - name: CLUSTER
   displayName: cluster
   description: cluster.
-  value: 192.168.64.13.nip.io
+  value: 192.168.64.21.nip.io
+  required: true
+- name: REPO
+  displayName: repo
+  description: repo.
+  value: repo
   required: true

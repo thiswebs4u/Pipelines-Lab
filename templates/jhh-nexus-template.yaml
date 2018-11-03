@@ -256,5 +256,5 @@ parameters:
 - name: CLUSTER
   displayName: cluster
   description: cluster.
-  value: 192.168.64.13.nip.io
+  value: 192.168.64.18.nip.io
   required: true

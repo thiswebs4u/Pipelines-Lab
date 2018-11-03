@@ -1,11 +1,11 @@
 #!/bin/bash
 # Setup Jenkins Project
-if [ "$#" -ne 3 ]; then
-    echo "Usage:"
-    echo "  $0 GUID REPO CLUSTER"
-    echo "  Example: $0 wkha https://github.com/wkulhanek/ParksMap na39.openshift.opentlc.com"
-    exit 1
-fi
+#if [ "$#" -ne 3 ]; then
+#    echo "Usage:"
+#    echo "  $0 GUID REPO CLUSTER"
+#    echo "  Example: $0 wkha https://github.com/wkulhanek/ParksMap na39.openshift.opentlc.com"
+#    exit 1
+#fi
 
 GUID=$1
 REPO=$2
@@ -28,8 +28,11 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 
 # To be Implemented by Student
 oc project ${GUID}-jenkins
-oc new-app -f ../templates/jhh-jenkins-template.yaml
+oc new-app -f ../templates/jhh-jenkins-template.yaml \
+-p GUID=$GUID \
+-p REPO=$REPO \
+-p CLUSTER=$CLUSTER
 
-docker build ../templates/jenkins-slave-appdev/ -t docker-registry-default.apps.$CLUSTER/$GUID-jenkins/jenkins-slave-maven-appdev:v3.9
+#docker build ../templates/jenkins-slave-appdev/ -t docker-registry-default.apps.$CLUSTER/$GUID-jenkins/jenkins-slave-maven-appdev:v3.9
 
 

@@ -28,7 +28,7 @@ echo "Setting up Gogs in project $GUID-nexus"
 # Ideally just calls a template
 oc project jhh-gogs
 
-oc new-app -f ../templates/postgresql-for-gogs.yaml
+oc new-app -f ../templates/$GUID-postgresql-for-gogs.yaml
 
 
 while : ; do
@@ -41,7 +41,7 @@ done
 
 echo "PostGres Deployed ***********************************************************************************"
 
-oc new-app -f ../templates/gogs-template.yaml
+oc new-app -f ../templates/$GUID-gogs-template.yaml
 
 #if [ -e openshift-tasks ]
 #git clone https://github.com/wkulhanek/openshift-tasks.git
