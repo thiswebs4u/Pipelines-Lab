@@ -86,7 +86,7 @@ objects:
       app: tasks
     name: tasks
   spec:
-    host: tasks-jhh-tasks-dev.192.168.64.18.nip.io
+    host: tasks-jhh-tasks-dev.${CLUSTER}
     port:
       targetPort: 8080
     to:
@@ -100,7 +100,7 @@ objects:
       - lastTransitionTime: 2018-11-03T01:40:17Z
         status: "True"
         type: Admitted
-      host: tasks-jhh-tasks-dev.192.168.64.18.nip.io
+      host: tasks-jhh-tasks-dev.${CLUSTER}
       routerName: router
       wildcardPolicy: None
 - apiVersion: v1
@@ -177,3 +177,19 @@ objects:
       type: Generic
   status:
     lastVersion: 0
+parameters:
+- name: GUID
+  displayName: guid
+  description: guid common across all projects.
+  value: 'jhh'
+  required: true
+- name: CLUSTER
+  displayName: cluster
+  description: cluster.
+  value: 192.168.64.21.nip.io
+  required: true
+- name: REPO
+  displayName: repo
+  description: repo.
+  value: repo
+  required: true

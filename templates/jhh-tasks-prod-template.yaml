@@ -158,7 +158,7 @@ objects:
       app: tasks-blue
     name: tasks
   spec:
-    host: tasks-jhh-tasks-prod.192.168.64.18.nip.io
+    host: tasks-jhh-tasks-prod.${CLUSTER}
     port:
       targetPort: 8080
     to:
@@ -172,7 +172,7 @@ objects:
       - lastTransitionTime: 2018-11-03T16:30:36Z
         status: "True"
         type: Admitted
-      host: tasks-jhh-tasks-prod.192.168.64.18.nip.io
+      host: tasks-jhh-tasks-prod.${CLUSTER}
       routerName: router
       wildcardPolicy: None
 - apiVersion: v1
@@ -255,3 +255,19 @@ objects:
   metadata:
     creationTimestamp: null
     name: tasks-green-config
+parameters:
+- name: GUID
+  displayName: guid
+  description: guid common across all projects.
+  value: 'jhh'
+  required: true
+- name: CLUSTER
+  displayName: cluster
+  description: cluster.
+  value: 192.168.64.21.nip.io
+  required: true
+- name: REPO
+  displayName: repo
+  description: repo.
+  value: repo
+  required: true

@@ -1,11 +1,11 @@
 #!/bin/bash
 # Setup Jenkins Project
-#if [ "$#" -ne 3 ]; then
-#    echo "Usage:"
-#    echo "  $0 GUID REPO CLUSTER"
-#    echo "  Example: $0 wkha https://github.com/wkulhanek/ParksMap na39.openshift.opentlc.com"
-#    exit 1
-#fi
+if [ "$#" -ne 3 ]; then
+    echo "Usage:"
+    echo "  $0 GUID REPO CLUSTER"
+    echo "  Example: $0 wkha https://github.com/wkulhanek/ParksMap na39.openshift.opentlc.com"
+    exit 1
+fi
 
 GUID=$1
 REPO=$2
